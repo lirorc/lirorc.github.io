@@ -9,14 +9,19 @@ h1 {
   align-items: center;
   justify-content: center;
   color: gray;
+  font-family: "Times New Roman";
 }
 
 p {
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
   color: #DEDEDE; /* Destruction */
-  padding: 2%;
+  font-size: 1.3em;
+  font-family: "Times New Roman";
+  padding: 2% 5% 2% 5%;
+  line-height: 150%;
 }
 
 a {
@@ -25,6 +30,8 @@ a {
   justify-content: center;
   color: yellow;
   padding: 2%;
+  font-size: 1.2em;
+  font-family: "Times New Roman";
 }
 
 pre {
@@ -33,7 +40,9 @@ pre {
   justify-content: center;
   font-size: 1.4em;
   font-family: "Times New Roman", serif;
+  padding: 4%;
   color: #DEDEDE; /* Destruction */
+  line-height: 120%;
 }
 
 body {
