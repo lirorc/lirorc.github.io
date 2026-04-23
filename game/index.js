@@ -7476,6 +7476,8 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
 
   var _glTexImage2D = _emscripten_glTexImage2D;
 
+  var _glTexParameterf = _emscripten_glTexParameterf;
+
   var _glTexParameteri = _emscripten_glTexParameteri;
 
   var _glUniform1i = _emscripten_glUniform1i;
@@ -9596,49 +9598,49 @@ function checkIncomingModuleAPI() {
   ignoredModuleProp('onSbrkGrow');
 }
 var ASM_CONSTS = {
-  90222: () => { if (document.fullscreenElement) return 1; },  
- 90268: () => { return Module.canvas.width; },  
- 90300: () => { return parseInt(Module.canvas.style.width); },  
- 90348: () => { document.exitFullscreen(); },  
- 90375: () => { setTimeout(function(){ Module.requestFullscreen(false, false); }, 100); },  
- 90447: () => { if (document.fullscreenElement) return 1; },  
- 90493: () => { return Module.canvas.width; },  
- 90525: () => { return screen.width; },  
- 90550: () => { document.exitFullscreen(); },  
- 90577: ($0) => { const canvasId = UTF8ToString($0); setTimeout(function() { Module.requestFullscreen(false, true); setTimeout(function() { document.querySelector(canvasId).style.width="unset"; }, 100); }, 100); },  
- 90771: () => { return window.innerWidth; },  
- 90797: () => { return window.innerHeight; },  
- 90824: () => { if (document.fullscreenElement) return 1; },  
- 90870: () => { return Module.canvas.width; },  
- 90902: () => { return parseInt(Module.canvas.style.width); },  
- 90950: () => { if (document.fullscreenElement) return 1; },  
- 90996: () => { return Module.canvas.width; },  
- 91028: () => { return screen.width; },  
- 91053: () => { return window.innerWidth; },  
- 91079: () => { return window.innerHeight; },  
- 91106: () => { if (document.fullscreenElement) return 1; },  
- 91152: () => { return Module.canvas.width; },  
- 91184: () => { return screen.width; },  
- 91209: () => { document.exitFullscreen(); },  
- 91236: () => { if (document.fullscreenElement) return 1; },  
- 91282: () => { return Module.canvas.width; },  
- 91314: () => { return parseInt(Module.canvas.style.width); },  
- 91362: () => { document.exitFullscreen(); },  
- 91389: ($0) => { Module.canvas.style.opacity = $0; },  
- 91427: () => { return screen.width; },  
- 91452: () => { return screen.height; },  
- 91478: () => { return window.screenX; },  
- 91505: () => { return window.screenY; },  
- 91532: () => { return window.devicePixelRatio; },  
- 91568: ($0) => { navigator.clipboard.writeText(UTF8ToString($0)); },  
- 91621: ($0) => { Module.canvas.style.cursor = UTF8ToString($0); },  
- 91672: () => { Module.canvas.style.cursor = 'none'; },  
- 91709: ($0, $1, $2, $3) => { try { navigator.getGamepads()[$0].vibrationActuator.playEffect('dual-rumble', { startDelay: 0, duration: $3, weakMagnitude: $1, strongMagnitude: $2 }); } catch (e) { try { navigator.getGamepads()[$0].hapticActuators[0].pulse($2, $3); } catch (e) { } } },  
- 91965: ($0) => { Module.canvas.style.cursor = UTF8ToString($0); },  
- 92016: () => { if (document.pointerLockElement) return 1; },  
- 92063: () => { if (document.fullscreenElement) return 1; },  
- 92109: () => { return window.innerWidth; },  
- 92135: () => { return window.innerHeight; }
+  127054: () => { if (document.fullscreenElement) return 1; },  
+ 127100: () => { return Module.canvas.width; },  
+ 127132: () => { return parseInt(Module.canvas.style.width); },  
+ 127180: () => { document.exitFullscreen(); },  
+ 127207: () => { setTimeout(function(){ Module.requestFullscreen(false, false); }, 100); },  
+ 127279: () => { if (document.fullscreenElement) return 1; },  
+ 127325: () => { return Module.canvas.width; },  
+ 127357: () => { return screen.width; },  
+ 127382: () => { document.exitFullscreen(); },  
+ 127409: ($0) => { const canvasId = UTF8ToString($0); setTimeout(function() { Module.requestFullscreen(false, true); setTimeout(function() { document.querySelector(canvasId).style.width="unset"; }, 100); }, 100); },  
+ 127603: () => { return window.innerWidth; },  
+ 127629: () => { return window.innerHeight; },  
+ 127656: () => { if (document.fullscreenElement) return 1; },  
+ 127702: () => { return Module.canvas.width; },  
+ 127734: () => { return parseInt(Module.canvas.style.width); },  
+ 127782: () => { if (document.fullscreenElement) return 1; },  
+ 127828: () => { return Module.canvas.width; },  
+ 127860: () => { return screen.width; },  
+ 127885: () => { return window.innerWidth; },  
+ 127911: () => { return window.innerHeight; },  
+ 127938: () => { if (document.fullscreenElement) return 1; },  
+ 127984: () => { return Module.canvas.width; },  
+ 128016: () => { return screen.width; },  
+ 128041: () => { document.exitFullscreen(); },  
+ 128068: () => { if (document.fullscreenElement) return 1; },  
+ 128114: () => { return Module.canvas.width; },  
+ 128146: () => { return parseInt(Module.canvas.style.width); },  
+ 128194: () => { document.exitFullscreen(); },  
+ 128221: ($0) => { Module.canvas.style.opacity = $0; },  
+ 128259: () => { return screen.width; },  
+ 128284: () => { return screen.height; },  
+ 128310: () => { return window.screenX; },  
+ 128337: () => { return window.screenY; },  
+ 128364: () => { return window.devicePixelRatio; },  
+ 128400: ($0) => { navigator.clipboard.writeText(UTF8ToString($0)); },  
+ 128453: ($0) => { Module.canvas.style.cursor = UTF8ToString($0); },  
+ 128504: () => { Module.canvas.style.cursor = 'none'; },  
+ 128541: ($0, $1, $2, $3) => { try { navigator.getGamepads()[$0].vibrationActuator.playEffect('dual-rumble', { startDelay: 0, duration: $3, weakMagnitude: $1, strongMagnitude: $2 }); } catch (e) { try { navigator.getGamepads()[$0].hapticActuators[0].pulse($2, $3); } catch (e) { } } },  
+ 128797: ($0) => { Module.canvas.style.cursor = UTF8ToString($0); },  
+ 128848: () => { if (document.pointerLockElement) return 1; },  
+ 128895: () => { if (document.fullscreenElement) return 1; },  
+ 128941: () => { return window.innerWidth; },  
+ 128967: () => { return window.innerHeight; }
 };
 function SetCanvasIdJs(out,outSize) { var canvasId = "#" + Module.canvas.id; stringToUTF8(canvasId, out, outSize); }
 function __asyncjs__RequestClipboardData() { return Asyncify.handleAsync(async () => { if (navigator.clipboard && window.isSecureContext) { let items = await navigator.clipboard.read(); for (const item of items) { if (item.types.includes("text/plain")) { const blob = await item.getType("text/plain"); const text = await blob.text(); window._lastClipboardString = text; } else if (item.types.find(t => t.startsWith("image/"))) { const blob = await item.getType(item.types.find(t => t.startsWith("image/"))); const bitmap = await createImageBitmap(blob); const canvas = document.createElement('canvas'); canvas.width = bitmap.width; canvas.height = bitmap.height; const ctx = canvas.getContext('2d'); ctx.drawImage(bitmap, 0, 0); const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data; window._lastImgWidth = canvas.width; window._lastImgHeight = canvas.height; window._lastImgData = imgData; } } } else console.warn("Clipboard read() requires HTTPS/Localhost"); }); }
@@ -10305,6 +10307,8 @@ var wasmImports = {
   glShaderSource: _glShaderSource,
   /** @export */
   glTexImage2D: _glTexImage2D,
+  /** @export */
+  glTexParameterf: _glTexParameterf,
   /** @export */
   glTexParameteri: _glTexParameteri,
   /** @export */
