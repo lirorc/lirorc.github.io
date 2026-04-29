@@ -7480,25 +7480,9 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
 
   var _glTexParameteri = _emscripten_glTexParameteri;
 
-  var _glUniform1fv = _emscripten_glUniform1fv;
-
   var _glUniform1i = _emscripten_glUniform1i;
 
-  var _glUniform1iv = _emscripten_glUniform1iv;
-
-  var _glUniform2fv = _emscripten_glUniform2fv;
-
-  var _glUniform2iv = _emscripten_glUniform2iv;
-
-  var _glUniform3fv = _emscripten_glUniform3fv;
-
-  var _glUniform3iv = _emscripten_glUniform3iv;
-
   var _glUniform4f = _emscripten_glUniform4f;
-
-  var _glUniform4fv = _emscripten_glUniform4fv;
-
-  var _glUniform4iv = _emscripten_glUniform4iv;
 
   var _glUniformMatrix4fv = _emscripten_glUniformMatrix4fv;
 
@@ -9614,49 +9598,49 @@ function checkIncomingModuleAPI() {
   ignoredModuleProp('onSbrkGrow');
 }
 var ASM_CONSTS = {
-  127838: () => { if (document.fullscreenElement) return 1; },  
- 127884: () => { return Module.canvas.width; },  
- 127916: () => { return parseInt(Module.canvas.style.width); },  
- 127964: () => { document.exitFullscreen(); },  
- 127991: () => { setTimeout(function(){ Module.requestFullscreen(false, false); }, 100); },  
- 128063: () => { if (document.fullscreenElement) return 1; },  
- 128109: () => { return Module.canvas.width; },  
- 128141: () => { return screen.width; },  
- 128166: () => { document.exitFullscreen(); },  
- 128193: ($0) => { const canvasId = UTF8ToString($0); setTimeout(function() { Module.requestFullscreen(false, true); setTimeout(function() { document.querySelector(canvasId).style.width="unset"; }, 100); }, 100); },  
- 128387: () => { return window.innerWidth; },  
- 128413: () => { return window.innerHeight; },  
- 128440: () => { if (document.fullscreenElement) return 1; },  
- 128486: () => { return Module.canvas.width; },  
- 128518: () => { return parseInt(Module.canvas.style.width); },  
- 128566: () => { if (document.fullscreenElement) return 1; },  
- 128612: () => { return Module.canvas.width; },  
- 128644: () => { return screen.width; },  
- 128669: () => { return window.innerWidth; },  
- 128695: () => { return window.innerHeight; },  
- 128722: () => { if (document.fullscreenElement) return 1; },  
- 128768: () => { return Module.canvas.width; },  
- 128800: () => { return screen.width; },  
- 128825: () => { document.exitFullscreen(); },  
- 128852: () => { if (document.fullscreenElement) return 1; },  
- 128898: () => { return Module.canvas.width; },  
- 128930: () => { return parseInt(Module.canvas.style.width); },  
- 128978: () => { document.exitFullscreen(); },  
- 129005: ($0) => { Module.canvas.style.opacity = $0; },  
- 129043: () => { return screen.width; },  
- 129068: () => { return screen.height; },  
- 129094: () => { return window.screenX; },  
- 129121: () => { return window.screenY; },  
- 129148: () => { return window.devicePixelRatio; },  
- 129184: ($0) => { navigator.clipboard.writeText(UTF8ToString($0)); },  
- 129237: ($0) => { Module.canvas.style.cursor = UTF8ToString($0); },  
- 129288: () => { Module.canvas.style.cursor = 'none'; },  
- 129325: ($0, $1, $2, $3) => { try { navigator.getGamepads()[$0].vibrationActuator.playEffect('dual-rumble', { startDelay: 0, duration: $3, weakMagnitude: $1, strongMagnitude: $2 }); } catch (e) { try { navigator.getGamepads()[$0].hapticActuators[0].pulse($2, $3); } catch (e) { } } },  
- 129581: ($0) => { Module.canvas.style.cursor = UTF8ToString($0); },  
- 129632: () => { if (document.pointerLockElement) return 1; },  
- 129679: () => { if (document.fullscreenElement) return 1; },  
- 129725: () => { return window.innerWidth; },  
- 129751: () => { return window.innerHeight; }
+  127166: () => { if (document.fullscreenElement) return 1; },  
+ 127212: () => { return Module.canvas.width; },  
+ 127244: () => { return parseInt(Module.canvas.style.width); },  
+ 127292: () => { document.exitFullscreen(); },  
+ 127319: () => { setTimeout(function(){ Module.requestFullscreen(false, false); }, 100); },  
+ 127391: () => { if (document.fullscreenElement) return 1; },  
+ 127437: () => { return Module.canvas.width; },  
+ 127469: () => { return screen.width; },  
+ 127494: () => { document.exitFullscreen(); },  
+ 127521: ($0) => { const canvasId = UTF8ToString($0); setTimeout(function() { Module.requestFullscreen(false, true); setTimeout(function() { document.querySelector(canvasId).style.width="unset"; }, 100); }, 100); },  
+ 127715: () => { return window.innerWidth; },  
+ 127741: () => { return window.innerHeight; },  
+ 127768: () => { if (document.fullscreenElement) return 1; },  
+ 127814: () => { return Module.canvas.width; },  
+ 127846: () => { return parseInt(Module.canvas.style.width); },  
+ 127894: () => { if (document.fullscreenElement) return 1; },  
+ 127940: () => { return Module.canvas.width; },  
+ 127972: () => { return screen.width; },  
+ 127997: () => { return window.innerWidth; },  
+ 128023: () => { return window.innerHeight; },  
+ 128050: () => { if (document.fullscreenElement) return 1; },  
+ 128096: () => { return Module.canvas.width; },  
+ 128128: () => { return screen.width; },  
+ 128153: () => { document.exitFullscreen(); },  
+ 128180: () => { if (document.fullscreenElement) return 1; },  
+ 128226: () => { return Module.canvas.width; },  
+ 128258: () => { return parseInt(Module.canvas.style.width); },  
+ 128306: () => { document.exitFullscreen(); },  
+ 128333: ($0) => { Module.canvas.style.opacity = $0; },  
+ 128371: () => { return screen.width; },  
+ 128396: () => { return screen.height; },  
+ 128422: () => { return window.screenX; },  
+ 128449: () => { return window.screenY; },  
+ 128476: () => { return window.devicePixelRatio; },  
+ 128512: ($0) => { navigator.clipboard.writeText(UTF8ToString($0)); },  
+ 128565: ($0) => { Module.canvas.style.cursor = UTF8ToString($0); },  
+ 128616: () => { Module.canvas.style.cursor = 'none'; },  
+ 128653: ($0, $1, $2, $3) => { try { navigator.getGamepads()[$0].vibrationActuator.playEffect('dual-rumble', { startDelay: 0, duration: $3, weakMagnitude: $1, strongMagnitude: $2 }); } catch (e) { try { navigator.getGamepads()[$0].hapticActuators[0].pulse($2, $3); } catch (e) { } } },  
+ 128909: ($0) => { Module.canvas.style.cursor = UTF8ToString($0); },  
+ 128960: () => { if (document.pointerLockElement) return 1; },  
+ 129007: () => { if (document.fullscreenElement) return 1; },  
+ 129053: () => { return window.innerWidth; },  
+ 129079: () => { return window.innerHeight; }
 };
 function SetCanvasIdJs(out,outSize) { var canvasId = "#" + Module.canvas.id; stringToUTF8(canvasId, out, outSize); }
 function __asyncjs__RequestClipboardData() { return Asyncify.handleAsync(async () => { if (navigator.clipboard && window.isSecureContext) { let items = await navigator.clipboard.read(); for (const item of items) { if (item.types.includes("text/plain")) { const blob = await item.getType("text/plain"); const text = await blob.text(); window._lastClipboardString = text; } else if (item.types.find(t => t.startsWith("image/"))) { const blob = await item.getType(item.types.find(t => t.startsWith("image/"))); const bitmap = await createImageBitmap(blob); const canvas = document.createElement('canvas'); canvas.width = bitmap.width; canvas.height = bitmap.height; const ctx = canvas.getContext('2d'); ctx.drawImage(bitmap, 0, 0); const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data; window._lastImgWidth = canvas.width; window._lastImgHeight = canvas.height; window._lastImgData = imgData; } } } else console.warn("Clipboard read() requires HTTPS/Localhost"); }); }
@@ -10328,25 +10312,9 @@ var wasmImports = {
   /** @export */
   glTexParameteri: _glTexParameteri,
   /** @export */
-  glUniform1fv: _glUniform1fv,
-  /** @export */
   glUniform1i: _glUniform1i,
   /** @export */
-  glUniform1iv: _glUniform1iv,
-  /** @export */
-  glUniform2fv: _glUniform2fv,
-  /** @export */
-  glUniform2iv: _glUniform2iv,
-  /** @export */
-  glUniform3fv: _glUniform3fv,
-  /** @export */
-  glUniform3iv: _glUniform3iv,
-  /** @export */
   glUniform4f: _glUniform4f,
-  /** @export */
-  glUniform4fv: _glUniform4fv,
-  /** @export */
-  glUniform4iv: _glUniform4iv,
   /** @export */
   glUniformMatrix4fv: _glUniformMatrix4fv,
   /** @export */
