@@ -225,7 +225,7 @@ var NODEFS = 'NODEFS is no longer included by default; build with -lnodefs.js';
 // perform assertions in shell.js after we set up out() and err(), as otherwise
 // if an assertion fails it cannot print the message
 
-assert(!ENVIRONMENT_IS_SHELL, 'shell environment detected but not enabled at build time.  Add `shell` to `-sENVIRONMENT` to enable.');
+assert(!ENVIRONMENT_IS_SHELL, 'shell environment detected but not enabled at build time (add `shell` to `-sENVIRONMENT` to enable)');
 
 // end include: shell.js
 
@@ -2047,7 +2047,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
           path = FS.cwd() + '/' + path;
         }
   
-        // limit max consecutive symlinks to 40 (SYMLOOP_MAX).
+        // limit max consecutive symlinks to SYMLOOP_MAX.
         linkloop: for (var nlinks = 0; nlinks < 40; nlinks++) {
           // split the absolute path
           var parts = path.split('/').filter((p) => !!p);
@@ -2339,7 +2339,14 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
         var arg = setattr ? stream : node;
         setattr ??= node.node_ops.setattr;
         FS.checkOpExists(setattr, 63)
-        setattr(arg, attr);
+        try {
+          setattr(arg, attr);
+        } catch (e) {
+          if (e instanceof RangeError) {
+            throw new FS.ErrnoError(22);
+          }
+          throw e;
+        }
       },
   chrdev_stream_ops:{
   open(stream) {
@@ -3566,6 +3573,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
   };
   
   var SYSCALLS = {
+  currentUmask:18,
   calculateAt(dirfd, path, allowEmpty) {
         if (PATH.isAbs(path)) {
           return path;
@@ -3706,7 +3714,8 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
           return stream.flags;
         case 4: {
           var arg = syscallGetVarargI();
-          stream.flags |= arg;
+          var mask = 289792;
+          stream.flags = (stream.flags & ~mask) | (arg & mask);
           return 0;
         }
         case 12: {
@@ -3734,7 +3743,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
 
   
   var stringToUTF8 = (str, outPtr, maxBytesToWrite) => {
-      assert(typeof maxBytesToWrite == 'number', 'stringToUTF8(str, outPtr, maxBytesToWrite) is missing the third parameter that specifies the length of the output buffer!');
+      assert(typeof maxBytesToWrite == 'number', 'stringToUTF8 requires a third parameter that specifies the length of the output buffer');
       return stringToUTF8Array(str, HEAPU8, outPtr, maxBytesToWrite);
     };
   function ___syscall_getcwd(buf, size) {
@@ -3859,6 +3868,9 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
       path = SYSCALLS.getStr(path);
       path = SYSCALLS.calculateAt(dirfd, path);
       var mode = varargs ? syscallGetVarargI() : 0;
+      if (flags & 64) {
+        mode &= ~SYSCALLS.currentUmask;
+      }
       return FS.open(path, flags, mode).fd;
     } catch (e) {
     if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
@@ -4147,7 +4159,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
       stringToUTF8(e.mapping, eventStruct + 1176, 64);
     };
   var _emscripten_get_gamepad_status = (index, gamepadState) => {
-      assert(JSEvents.lastGamepadState, 'emscripten_get_gamepad_status() can only be called after having first called emscripten_sample_gamepad_data() and that function has returned EMSCRIPTEN_RESULT_SUCCESS!');
+      assert(JSEvents.lastGamepadState, 'emscripten_get_gamepad_status() called before emscripten_sample_gamepad_data()');
       // INVALID_PARAM is returned on a Gamepad index that never was there.
       if (index < 0 || index >= JSEvents.lastGamepadState.length) return -5;
   
@@ -4163,7 +4175,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
 
 
   var _emscripten_get_num_gamepads = () => {
-      assert(JSEvents.lastGamepadState, 'emscripten_get_num_gamepads() can only be called after having first called emscripten_sample_gamepad_data() and that function has returned EMSCRIPTEN_RESULT_SUCCESS!');
+      assert(JSEvents.lastGamepadState, 'emscripten_get_num_gamepads() called before emscripten_sample_gamepad_data()');
       // N.B. Do not call emscripten_get_num_gamepads() unless having first called emscripten_sample_gamepad_data(), and that has returned EMSCRIPTEN_RESULT_SUCCESS.
       // Otherwise the following line will throw an exception.
       return JSEvents.lastGamepadState.length;
@@ -6447,7 +6459,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
    * @param {boolean=} noSetTiming
    */
   var setMainLoop = (iterFunc, fps, simulateInfiniteLoop, arg, noSetTiming) => {
-      assert(!MainLoop.func, 'emscripten_set_main_loop: there can only be one main loop function at once: call emscripten_cancel_main_loop to cancel the previous one before setting a new one with different parameters.');
+      assert(!MainLoop.func, 'emscripten_set_main_loop: there can only be one main loop function at once')
       MainLoop.func = iterFunc;
       MainLoop.arg = arg;
   
@@ -7120,16 +7132,8 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
         var canvas = Browser.getCanvas();
         var rect = canvas.getBoundingClientRect();
   
-        // Neither .scrollX or .pageXOffset are defined in a spec, but
-        // we prefer .scrollX because it is currently in a spec draft.
-        // (see: http://www.w3.org/TR/2013/WD-cssom-view-20131217/)
-        var scrollX = ((typeof window.scrollX != 'undefined') ? window.scrollX : window.pageXOffset);
-        var scrollY = ((typeof window.scrollY != 'undefined') ? window.scrollY : window.pageYOffset);
-        // If this assert lands, it's likely because the browser doesn't support scrollX or pageXOffset
-        // and we have no viable fallback.
-        assert((typeof scrollX != 'undefined') && (typeof scrollY != 'undefined'), 'Unable to retrieve scroll position, mouse positions likely broken.');
-        var adjustedX = pageX - (scrollX + rect.left);
-        var adjustedY = pageY - (scrollY + rect.top);
+        var adjustedX = pageX - (window.scrollX + rect.left);
+        var adjustedY = pageY - (window.scrollY + rect.top);
   
         // the canvas might be CSS-scaled compared to its backbuffer;
         // SDL-using content will want mouse coordinates in terms
@@ -7318,7 +7322,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
   
   try {
   
-      if (isNaN(offset)) return 61;
+      if (isNaN(offset)) return 22;
       var stream = SYSCALLS.getStreamFromFD(fd);
       FS.llseek(stream, offset, whence);
       HEAP64[((newOffset)>>3)] = BigInt(stream.position);
@@ -8574,16 +8578,8 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
         // in the coordinates.
         const rect = Browser.getCanvas().getBoundingClientRect();
   
-        // Neither .scrollX or .pageXOffset are defined in a spec, but
-        // we prefer .scrollX because it is currently in a spec draft.
-        // (see: http://www.w3.org/TR/2013/WD-cssom-view-20131217/)
-        var scrollX = ((typeof window.scrollX != 'undefined') ? window.scrollX : window.pageXOffset);
-        var scrollY = ((typeof window.scrollY != 'undefined') ? window.scrollY : window.pageYOffset);
-        // If this assert lands, it's likely because the browser doesn't support scrollX or pageXOffset
-        // and we have no viable fallback.
-        assert((typeof scrollX != 'undefined') && (typeof scrollY != 'undefined'), 'Unable to retrieve scroll position, mouse positions likely broken.');
-        var adjustedX = pageX - (scrollX + rect.left);
-        var adjustedY = pageY - (scrollY + rect.top);
+        var adjustedX = pageX - (window.scrollX + rect.left);
+        var adjustedY = pageY - (window.scrollY + rect.top);
   
         // getBoundingClientRect() returns dimension affected by CSS, so as a result:
         // - when CSS scaling is enabled, this will fix the mouse coordinates to match the width/height of the window
@@ -8962,8 +8958,8 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
         }
       },
   whenDone() {
-        assert(Asyncify.currData, 'Tried to wait for an async operation when none is in progress.');
-        assert(!Asyncify.asyncPromiseHandlers, 'Cannot have multiple async operations in flight at once');
+        assert(Asyncify.currData, 'tried to wait for an async operation when none is in progress');
+        assert(!Asyncify.asyncPromiseHandlers, 'cannot have multiple async operations in flight at once');
         return new Promise((resolve, reject) => {
           Asyncify.asyncPromiseHandlers = { resolve, reject };
         });
@@ -9009,7 +9005,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
         return callUserCallback(func);
       },
   handleSleep(startAsync) {
-        assert(Asyncify.state !== Asyncify.State.Disabled, 'Asyncify cannot be done during or after the runtime exits');
+        assert(Asyncify.state !== Asyncify.State.Disabled, 'handleSleep called after Asyncify was shut down');
         if (ABORT) return;
         if (Asyncify.state === Asyncify.State.Normal) {
           // Prepare to sleep. Call startAsync, and see what happens:
@@ -9033,7 +9029,7 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
             // as it might break later operations (we can rewind ok now, but if
             // we unwind again, we would unwind through the extra compiled code
             // too).
-            assert(!Asyncify.exportCallStack.length, 'Waking up (starting to rewind) must be done from JS, without compiled code on the stack.');
+            assert(!Asyncify.exportCallStack.length, 'waking up (starting to rewind) must be done from JS, without compiled code on the stack');
             Asyncify.state = Asyncify.State.Rewinding;
             runAndAbortIfError(() => _asyncify_start_rewind(Asyncify.currData));
             if (typeof MainLoop != 'undefined' && MainLoop.func) {
@@ -9598,49 +9594,49 @@ function checkIncomingModuleAPI() {
   ignoredModuleProp('onSbrkGrow');
 }
 var ASM_CONSTS = {
-  139726: () => { if (document.fullscreenElement) return 1; },  
- 139772: () => { return Module.canvas.width; },  
- 139804: () => { return parseInt(Module.canvas.style.width); },  
- 139852: () => { document.exitFullscreen(); },  
- 139879: () => { setTimeout(function(){ Module.requestFullscreen(false, false); }, 100); },  
- 139951: () => { if (document.fullscreenElement) return 1; },  
- 139997: () => { return Module.canvas.width; },  
- 140029: () => { return screen.width; },  
- 140054: () => { document.exitFullscreen(); },  
- 140081: ($0) => { const canvasId = UTF8ToString($0); setTimeout(function() { Module.requestFullscreen(false, true); setTimeout(function() { document.querySelector(canvasId).style.width="unset"; }, 100); }, 100); },  
- 140275: () => { return window.innerWidth; },  
- 140301: () => { return window.innerHeight; },  
- 140328: () => { if (document.fullscreenElement) return 1; },  
- 140374: () => { return Module.canvas.width; },  
- 140406: () => { return parseInt(Module.canvas.style.width); },  
- 140454: () => { if (document.fullscreenElement) return 1; },  
- 140500: () => { return Module.canvas.width; },  
- 140532: () => { return screen.width; },  
- 140557: () => { return window.innerWidth; },  
- 140583: () => { return window.innerHeight; },  
- 140610: () => { if (document.fullscreenElement) return 1; },  
- 140656: () => { return Module.canvas.width; },  
- 140688: () => { return screen.width; },  
- 140713: () => { document.exitFullscreen(); },  
- 140740: () => { if (document.fullscreenElement) return 1; },  
- 140786: () => { return Module.canvas.width; },  
- 140818: () => { return parseInt(Module.canvas.style.width); },  
- 140866: () => { document.exitFullscreen(); },  
- 140893: ($0) => { Module.canvas.style.opacity = $0; },  
- 140931: () => { return screen.width; },  
- 140956: () => { return screen.height; },  
- 140982: () => { return window.screenX; },  
- 141009: () => { return window.screenY; },  
- 141036: () => { return window.devicePixelRatio; },  
- 141072: ($0) => { navigator.clipboard.writeText(UTF8ToString($0)); },  
- 141125: ($0) => { Module.canvas.style.cursor = UTF8ToString($0); },  
- 141176: () => { Module.canvas.style.cursor = 'none'; },  
- 141213: ($0, $1, $2, $3) => { try { navigator.getGamepads()[$0].vibrationActuator.playEffect('dual-rumble', { startDelay: 0, duration: $3, weakMagnitude: $1, strongMagnitude: $2 }); } catch (e) { try { navigator.getGamepads()[$0].hapticActuators[0].pulse($2, $3); } catch (e) { } } },  
- 141469: ($0) => { Module.canvas.style.cursor = UTF8ToString($0); },  
- 141520: () => { if (document.pointerLockElement) return 1; },  
- 141567: () => { if (document.fullscreenElement) return 1; },  
- 141613: () => { return window.innerWidth; },  
- 141639: () => { return window.innerHeight; }
+  142822: () => { if (document.fullscreenElement) return 1; },  
+ 142868: () => { return Module.canvas.width; },  
+ 142900: () => { return parseInt(Module.canvas.style.width); },  
+ 142948: () => { document.exitFullscreen(); },  
+ 142975: () => { setTimeout(function(){ Module.requestFullscreen(false, false); }, 100); },  
+ 143047: () => { if (document.fullscreenElement) return 1; },  
+ 143093: () => { return Module.canvas.width; },  
+ 143125: () => { return screen.width; },  
+ 143150: () => { document.exitFullscreen(); },  
+ 143177: ($0) => { const canvasId = UTF8ToString($0); setTimeout(function() { Module.requestFullscreen(false, true); setTimeout(function() { document.querySelector(canvasId).style.width="unset"; }, 100); }, 100); },  
+ 143371: () => { return window.innerWidth; },  
+ 143397: () => { return window.innerHeight; },  
+ 143424: () => { if (document.fullscreenElement) return 1; },  
+ 143470: () => { return Module.canvas.width; },  
+ 143502: () => { return parseInt(Module.canvas.style.width); },  
+ 143550: () => { if (document.fullscreenElement) return 1; },  
+ 143596: () => { return Module.canvas.width; },  
+ 143628: () => { return screen.width; },  
+ 143653: () => { return window.innerWidth; },  
+ 143679: () => { return window.innerHeight; },  
+ 143706: () => { if (document.fullscreenElement) return 1; },  
+ 143752: () => { return Module.canvas.width; },  
+ 143784: () => { return screen.width; },  
+ 143809: () => { document.exitFullscreen(); },  
+ 143836: () => { if (document.fullscreenElement) return 1; },  
+ 143882: () => { return Module.canvas.width; },  
+ 143914: () => { return parseInt(Module.canvas.style.width); },  
+ 143962: () => { document.exitFullscreen(); },  
+ 143989: ($0) => { Module.canvas.style.opacity = $0; },  
+ 144027: () => { return screen.width; },  
+ 144052: () => { return screen.height; },  
+ 144078: () => { return window.screenX; },  
+ 144105: () => { return window.screenY; },  
+ 144132: () => { return window.devicePixelRatio; },  
+ 144168: ($0) => { navigator.clipboard.writeText(UTF8ToString($0)); },  
+ 144221: ($0) => { Module.canvas.style.cursor = UTF8ToString($0); },  
+ 144272: () => { Module.canvas.style.cursor = 'none'; },  
+ 144309: ($0, $1, $2, $3) => { try { navigator.getGamepads()[$0].vibrationActuator.playEffect('dual-rumble', { startDelay: 0, duration: $3, weakMagnitude: $1, strongMagnitude: $2 }); } catch (e) { try { navigator.getGamepads()[$0].hapticActuators[0].pulse($2, $3); } catch (e) { } } },  
+ 144565: ($0) => { Module.canvas.style.cursor = UTF8ToString($0); },  
+ 144616: () => { if (document.pointerLockElement) return 1; },  
+ 144663: () => { if (document.fullscreenElement) return 1; },  
+ 144709: () => { return window.innerWidth; },  
+ 144735: () => { return window.innerHeight; }
 };
 function SetCanvasIdJs(out,outSize) { var canvasId = "#" + Module.canvas.id; stringToUTF8(canvasId, out, outSize); }
 function __asyncjs__RequestClipboardData() { return Asyncify.handleAsync(async () => { if (navigator.clipboard && window.isSecureContext) { let items = await navigator.clipboard.read(); for (const item of items) { if (item.types.includes("text/plain")) { const blob = await item.getType("text/plain"); const text = await blob.text(); window._lastClipboardString = text; } else if (item.types.find(t => t.startsWith("image/"))) { const blob = await item.getType(item.types.find(t => t.startsWith("image/"))); const bitmap = await createImageBitmap(blob); const canvas = document.createElement('canvas'); canvas.width = bitmap.width; canvas.height = bitmap.height; const ctx = canvas.getContext('2d'); ctx.drawImage(bitmap, 0, 0); const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data; window._lastImgWidth = canvas.width; window._lastImgHeight = canvas.height; window._lastImgData = imgData; } } } else console.warn("Clipboard read() requires HTTPS/Localhost"); }); }
